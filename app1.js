@@ -7,8 +7,8 @@ const app = express();
 app.use(express.static("public"));
 app.use(express.json());
 
-app.listen("8004",function(){
-    console.log("Server 8004 is listening");
+app.listen("8003",function(){
+    console.log("Server 8003 is listening");
 })
 
 let content = JSON.parse(fs.readFileSync("./data.json"));
@@ -31,9 +31,7 @@ authRouter
 authRouter
          .route("/login")
          .post(bodyChecker,loginUser)
-         // userRouter
-         //          .route("/:id")
-         //          .get(userId)
+     
          
          
     function createUser(req,res){
@@ -93,7 +91,9 @@ function loginUser(req,res){
     try{
 
         let {email,password} = req.body;
+        console.log(email);
         let obj =  content.find((obj)=>{
+            console.log(email)
             return obj.email == email;
         })
         if(!obj){
@@ -106,6 +106,11 @@ function loginUser(req,res){
                 message:"user logged-in"
             })
         }
+        else {
+            res
+                .status(422)
+                .send(" kindly enter correct email and password");
+        }
     }
         catch(err){
             res.status(500).json({
@@ -114,11 +119,7 @@ function loginUser(req,res){
         }
     }
 
-
-
-
-
-// app.use(function(req,res){
-//     let rest_of_the_path = path.join("/public","404.html")
-//     res.sendFile(path.join(__dirname,rest_of_the_path));
-// })
+app.use(function(req,res){
+    let rest_of_the_path = path.join("/public","404.html")
+    res.sendFile(path.join(__dirname,rest_of_the_path));
+})

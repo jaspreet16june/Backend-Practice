@@ -5,20 +5,8 @@
      "age": "22" },
   { "name": "harsimran",
      "age": "22" },
-  null,
   { "name": "jas",
      "age": "21" },
-  {
-    "name": "jas",
-    "email": "jaspreet@gmail.com",
-    "password": 12345678,
-    "confirmPassword": 12345678
-  },
-  {
-    "email": "jaspreet@gmail.com",
-    "password": 12345678,
-    "confirmPassword": 12345678
-  },
   {
     "email": "jaspreet@gmail.com",
     "password": 12345678,
