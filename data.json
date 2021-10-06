@@ -1,1 +1,30 @@
-[{"name":"Jaspreet","age":29},{"name":"harsimran","age":"22"},{"name":"harsimran","age":"22"},{"name":"jas","age":"21"},{"email":"jaspreet@gmail.com","password":12345678,"confirmPassword":12345678},{"email":"jaspreet@gmail.com","password":123456},{"email":"jaspreet@gmail.com","password":123456},{"name":"Jas","email":"jaspreet@gmail.com","password":123456,"confirmPassword":123456},{"email":"jaspreet@gmail.com","password":123456,"confirmPassword":123456}]
+[
+  { "name": "Jaspreet", "age": 29 },
+  { "name": "harsimran", "age": "22" },
+  { "name": "harsimran", "age": "22" },
+  { "name": "jas", "age": "21" },
+  {
+    "email": "jaspreet@gmail.com",
+    "password": 12345678,
+    "confirmPassword": 12345678
+  },
+  { "email": "jaspreet@gmail.com", "password": 123456 },
+  { "email": "jaspreet@gmail.com", "password": 123456 },
+  {
+    "name": "Jas",
+    "email": "jaspreet@gmail.com",
+    "password": 123456,
+    "confirmPassword": 123456
+  },
+  {
+    "email": "jaspreet@gmail.com",
+    "password": 123456,
+    "confirmPassword": 123456
+  },
+  {
+    "name": "jaspreetkaur",
+    "email": "jaspreet@gmail.com",
+    "password": 12345,
+    "confirmPassword": 12345
+  }
+]

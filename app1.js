@@ -1,10 +1,9 @@
-const express = require("express");
+const express = require('express');
 const path = require("path");
 const fs = require("fs");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("./secret");
-
 const app = express();
 
 app.use(express.static("public"));
@@ -30,11 +29,12 @@ userRouter
 
 authRouter
          .route("/signup")
+        //  .get(getUsers)
          .post(bodyChecker,signUpUser)
 
 authRouter
          .route("/login")
-         .post(protectRoute,loginUser)
+         .post(bodyChecker,loginUser)
     
     function createUser(req,res){
     let body = req.body;
@@ -44,7 +44,7 @@ authRouter
     fs.writeFileSync("./data.json",JSON.stringify(content));
    
     res.status(200).json({
-        message:body,
+        message:content,
     })
 }
 
@@ -56,9 +56,9 @@ function getUsers(req,res){
 }
 
 function bodyChecker(req,res,next){
-    let body = req.body;
+    // let body = req.body;
     
-    let isPresent = Object.keys(body);
+    let isPresent = Object.keys(req.body);
     console.log(isPresent.length);
     if(isPresent.length){
         next();
@@ -69,19 +69,24 @@ function bodyChecker(req,res,next){
 
 
 function protectRoute(req,res,next){
-
-    let isPresent = jwt.verify(req.cookies.JWT , JWT_SECRET);
-    if(isPresent){
+try{
+    let decreptedToken = jwt.verify(req.cookies.JWT , JWT_SECRET);
+    if(decreptedToken){
         next();
     }else{
         res.send("send details in body")
     }
+} catch(err){
+    res.status(404).json({
+        message:err.message,
+    })
+}
 }
 function signUpUser(req,res){
     try{
-        let {email,password,confirmPassword} = req.body
+        let {name,email,password,confirmPassword} = req.body
         if(password == confirmPassword){
-            let newUser = {email,password,confirmPassword};
+            let newUser = {name,email,password,confirmPassword};
             content.push(newUser);
 
             fs.writeFileSync("data.json",JSON.stringify(content));
@@ -113,12 +118,10 @@ function loginUser(req,res){
                 message:"User not found"
             })
         }
-        if(obj.password == password){
-            var token = jwt.sign({email:obj.email},JWT_SECRET);
+        if(password == obj.password){
+            let token = jwt.sign({email:obj.email},JWT_SECRET);
             res.cookie("JWT",token)
-            res.status(200).json({
-                message:"user logged-in"
-            })
+            res.status(200).send("user logged-in")
         }
         
         else {
@@ -128,7 +131,7 @@ function loginUser(req,res){
         }
     }
         catch(err){
-            res.status(500).json({
+            res.status(400).json({
                 message:err.message,
             })
         }
@@ -136,5 +139,5 @@ function loginUser(req,res){
 
 app.use(function(req,res){
     let rest_of_the_path = path.join("/public","404.html")
-    res.sendFile(path.join(__dirname,rest_of_the_path));
+    res.status(400).sendFile(path.join(__dirname,rest_of_the_path));
 })
