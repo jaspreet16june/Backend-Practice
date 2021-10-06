@@ -1,13 +1,17 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("./secret");
 
 const app = express();
 
 app.use(express.static("public"));
 app.use(express.json());
+app.use(cookieParser());
 
-app.listen("8003",function(){
+app.listen("8008",function(){
     console.log("Server 8003 is listening");
 })
 
@@ -21,7 +25,7 @@ app.use('/auth',authRouter);
 
 userRouter
          .route("/")
-         .get(getUsers)
+         .get(protectRoute,getUsers)
          .post(bodyChecker,createUser)
 
 authRouter
@@ -30,10 +34,8 @@ authRouter
 
 authRouter
          .route("/login")
-         .post(bodyChecker,loginUser)
-     
-         
-         
+         .post(protectRoute,loginUser)
+    
     function createUser(req,res){
     let body = req.body;
     console.log(body);
@@ -65,6 +67,16 @@ function bodyChecker(req,res,next){
     }
 }
 
+
+function protectRoute(req,res,next){
+
+    let isPresent = jwt.verify(req.cookies.JWT , JWT_SECRET);
+    if(isPresent){
+        next();
+    }else{
+        res.send("send details in body")
+    }
+}
 function signUpUser(req,res){
     try{
         let {email,password,confirmPassword} = req.body
@@ -102,10 +114,13 @@ function loginUser(req,res){
             })
         }
         if(obj.password == password){
+            var token = jwt.sign({email:obj.email},JWT_SECRET);
+            res.cookie("JWT",token)
             res.status(200).json({
                 message:"user logged-in"
             })
         }
+        
         else {
             res
                 .status(422)
