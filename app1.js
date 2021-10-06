@@ -7,31 +7,26 @@ const app = express();
 app.use(express.static("public"));
 app.use(express.json());
 
-app.listen("8000",function(){
-    console.log("Server 8000 is listening");
+app.listen("8004",function(){
+    console.log("Server 8004 is listening");
 })
 
 let content = JSON.parse(fs.readFileSync("./data.json"));
 
 const userRouter = express.Router();
-// const authRouter = express.Router();
+const authRouter = express.Router();
 
 app.use('/user',userRouter);
-// app.use('/auth',authRouter);
-
-app.use(function(req,res){
-    let rest_of_the_path = path.join("/public","404.html")
-    res.sendFile(path.join(__dirname,rest_of_the_path));
-})
+app.use('/auth',authRouter);
 
 userRouter
-.route("/")
+         .route("/")
          .get(getUsers)
          .post(bodyChecker,createUser)
 
-         // authRouter
-         //          .route("/")
-         //          .get(authUser)
+authRouter
+         .route("/signup")
+         .get(bodyChecker,signUpUser)
          
          // userRouter
          //          .route("/:id")
@@ -68,3 +63,30 @@ function bodyChecker(req,res,next){
         res.send("send details in body")
     }
 }
+function signUpUser(req,res){
+    try{
+        let {email,password,confirmPassword} = req.body
+        if(password == confirmPassword){
+            let newUser = {email,password,confirmPassword};
+            content.push(newUser);
+
+            fs.writeFileSync("data.json",JSON.stringify(content));
+            res.status(200).json({
+                createUser:newUser
+            })
+
+        }else{
+            res.status(422).send("Data is not Sufficent");
+        }
+    }
+    catch(err){
+        res.status(500).json({
+            message:err.message,
+        })
+    }
+}
+
+app.use(function(req,res){
+    let rest_of_the_path = path.join("/public","404.html")
+    res.sendFile(path.join(__dirname,rest_of_the_path));
+})

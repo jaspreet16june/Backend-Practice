@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignUp</title>
+</head>
+<body>
+    <form>
+    <input type="text" class ="name">    
+    <label for="name">Name</label>
+    <input type="email" class ="email">
+    <label for="email">Email</label>
+    <input type="password" class ="password">
+    <label for="password">Password</label>
+    <input type="password" class ="cpassword">
+    <label for="cpassword">Confirm Password</label>
+
+    <button class = "btn">SignUp</button>
+    </form>
+
+    <script 
+    src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.4/axios.min.js" 
+    crossorigin="anonymous">
+    </script>
+
+    <script>
+        let btn = document.querySelector(".btn")
+        btn.addEventListener("click",async function(e){
+            e.preventDefault();
+            let name = document.querySelector(".name").value;
+            let email = document.querySelector(".email").value;
+            let Password = document.querySelector(".password").value;
+            let cpassword = document.querySelector(".cpassword").value;
+
+         let resp  = await axios.post("./auth/signup",{name,email, Password,cpassword})
+         console.log("resp",resp);
+        })
+
+    </script>
+    
+</body>
+</html>
