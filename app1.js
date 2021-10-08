@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("./secret");
 const app = express();
+const userModel = require("./userModel");
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -82,21 +83,27 @@ try{
     })
 }
 }
-function signUpUser(req,res){
+async function signUpUser(req,res){
     try{
-        let {name,email,password,confirmPassword} = req.body
-        if(password == confirmPassword){
-            let newUser = {name,email,password,confirmPassword};
-            content.push(newUser);
+        // let {name,email,password,confirmPassword} = req.body
+        // if(password == confirmPassword){
+        //     let newUser = {name,email,password,confirmPassword};
+        //     content.push(newUser);
 
-            fs.writeFileSync("data.json",JSON.stringify(content));
-            res.status(200).json({
-                createUser:newUser
-            })
+        //     fs.writeFileSync("data.json",JSON.stringify(content));
+        //     res.status(200).json({
+        //         createUser:newUser
+        //     })
 
-        }else{
-            res.status(422).send("Data is not Sufficent");
-        }
+        // }else{
+        //     res.status(422).send("Data is not Sufficent");
+        // }
+
+        let newUser = await userModel.create(req.body);
+        res.status(200).json({
+            message:"User created successfully",
+            user:newUser,
+        })
     }
     catch(err){
         res.status(500).json({
