@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../secret");
+const { JWT_SECRET } = require("../hide/secret");
 
 module.exports.bodyChecker = function bodyChecker(req,res,next){
     // let body = req.body;
