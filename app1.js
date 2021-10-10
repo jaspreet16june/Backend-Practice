@@ -2,8 +2,8 @@ const express = require('express');
 const path = require("path");
 
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("./secret");
+// const jwt = require("jsonwebtoken");
+// const { JWT_SECRET } = require("./secret");
 const app = express();
 const userRouter = require("./router/userRouter");
 const authRouter = require("./router/authRouter");
