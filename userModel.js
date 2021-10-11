@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema({
             return this.password == this.confirmPassword;
         }
     },
+    token:{
+        type:String,
+        
+    }
 })
 
 userSchema.pre('save',function(next){

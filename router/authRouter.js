@@ -114,4 +114,39 @@ authRouter
                 })
             }
         }
+        async function resetPassword(req,res){
+            try{
+
+                let {token, password,confirmPasssword} = req.body;
+                let user = await userModel.findOne({ token })
+
+                if(user){
+
+                    user.password = password
+                    user.confirmPasssword = confirmPasssword
+                    user.token = undefined
+
+                    //database m save krna we will use save()
+                    
+                    await user.save()
+                    
+                    let newUser = await userModel.findOne({email:user.email})
+                     
+                    res.status(200).json({
+                        message:"user token sent to your mail",
+                        user: newUser
+                    })
+                }else{
+                    res.status(404).json({
+                        message:"tkoken is incorrect"
+                    })
+                }
+                    
+            }
+            catch(err){
+                    res.status(500).json({
+                        message:err.message
+                    })
+            }
+        }
 module.exports = authRouter;
