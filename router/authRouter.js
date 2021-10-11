@@ -1,5 +1,6 @@
 const express = require('express');
-
+const { JWT_SECRET } = require("../hide/secret");
+const jwt = require("jsonwebtoken");
 const {bodyChecker} = require("./utilFun");
 const authRouter = express.Router();
 
@@ -44,31 +45,32 @@ authRouter
                 })
             }
         }
-        function loginUser(req,res){
+        async function loginUser(req,res){
             try{
-        
-                let {email,password} = req.body;
-                console.log(email);
-                let obj =  content.find((obj)=>{
-                    console.log(email)
-                    return obj.email == email;
-                })
-                if(!obj){
-                    return res.status(404).json({
-                        message:"User not found"
-                    })
-                }
-                if(password == obj.password){
-                    let token = jwt.sign({email:obj.email},JWT_SECRET);
-                    res.cookie("JWT",token)
-                    res.status(200).send("user logged-in")
-                }
-                
-                else {
-                    res
-                        .status(422)
-                        .send(" kindly enter correct email and password");
-                }
+                let {email,password} = req.body ;
+
+               let user =await userModel.findOne({email});
+
+               if(user){
+                   //password
+                   if(user.password == password){
+                       let token = jwt.sign({id:user["_id"]},JWT_SECRET)
+                       res.cookie("jwt",token)
+
+                       res.status(200).json({
+                           message:"User Logged In",
+                       })
+                    }
+                    else{
+                        res.status(404).json({
+                            message:"User with this email is not found Kindly Signup"
+                        })
+                    }
+               }else{
+                   res.status(404).json({
+                       message:"User Not Found"
+                   })
+               }
             }
                 catch(err){
                     res.status(400).json({
