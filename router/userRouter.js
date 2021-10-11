@@ -2,7 +2,6 @@ const express = require('express');
 const {protectRoute,bodyChecker} = require("./utilFun")
 const userRouter = express.Router();
 
-
 userRouter
          .route("/")
          .get(protectRoute,getUsers)
