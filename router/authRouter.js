@@ -15,6 +15,10 @@ authRouter
 authRouter
          .route("/login")
          .post(bodyChecker,loginUser)
+
+authRouter
+         .route("/forgetPassword")
+         .post(forgetPassword);
     
 
          async function signUpUser(req,res){
@@ -54,7 +58,7 @@ authRouter
                if(user){
                    //password
                    if(user.password == password){
-                       let token = jwt.sign({id:user["_id"]},JWT_SECRET)
+                       let token = jwt.sign({id:user["_id"]},JWT_SECRET,{httpOnly :true})
                        res.cookie("jwt",token)
 
                        res.status(200).json({
@@ -78,4 +82,34 @@ authRouter
                     })
                 }
             }
+
+        async function forgetPassword(req,res){
+            try{
+
+                let {email} = req.body;
+
+                let user = await userModel.findOne({email});
+
+                if(user){
+                    let token = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+                    await userModel.updateOne({email},{token});
+                    let newUser = await userModel.findOne({email});
+
+                    res.status(200).json({
+                        message:"user token send to your email",
+                        user:newUser,
+                        token
+                    })
+                }else{
+                        res.status(404).json({
+                            message:"Kindly write correct email"
+                        })
+                }
+            }
+            catch(err){
+                res.status(404).json({
+                    message:err.message
+                })
+            }
+        }
 module.exports = authRouter;
