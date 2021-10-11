@@ -3,7 +3,7 @@ const { JWT_SECRET } = require("../hide/secret");
 const jwt = require("jsonwebtoken");
 const {bodyChecker} = require("./utilFun");
 const authRouter = express.Router();
-
+const emailSender = require("../sendEmail");
 const userModel = require("../userModel");
 
 
@@ -94,6 +94,8 @@ authRouter
                     let token = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
                     await userModel.updateOne({email},{token});
                     let newUser = await userModel.findOne({email});
+
+                    await emailSender(token, user.email);
 
                     res.status(200).json({
                         message:"user token send to your email",
