@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
     },
     confirmPassword:{
         type:String,
-        required:true,
+        // required:true,
         min:8,
         validate:function(){
             return this.password == this.confirmPassword;

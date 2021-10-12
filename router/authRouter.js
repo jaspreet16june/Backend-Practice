@@ -19,6 +19,10 @@ authRouter
 authRouter
          .route("/forgetPassword")
          .post(forgetPassword);
+
+authRouter
+         .route("/resetPassword")
+         .post(resetPassword);
     
 
          async function signUpUser(req,res){
@@ -138,7 +142,7 @@ authRouter
                     })
                 }else{
                     res.status(404).json({
-                        message:"tkoken is incorrect"
+                        message:"token is incorrect"
                     })
                 }
                     
