@@ -15,7 +15,10 @@ module.exports.bodyChecker = function bodyChecker(req,res,next){
 module.exports.protectRoute = function protectRoute(req,res,next){
     try{
         let decreptedToken = jwt.verify(req.cookies.JWT , JWT_SECRET);
-        if(decreptedToken){
+        
+            if(decreptedToken){
+            let userId = decreptedToken.id;
+            req.userId =  userId
             next();
         }else{
             res.send("send details in body")
