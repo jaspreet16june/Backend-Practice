@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const {PASSWORD} = require("./hide/secret.js");
+const {PASSWORD} = require("../hide/secret");
 const db_link = `mongodb+srv://Jaspreet_Kaur:${PASSWORD}@cluster0.81jou.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const validator = require("email-validator");
 

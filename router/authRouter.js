@@ -3,8 +3,8 @@ const { JWT_SECRET } = require("../hide/secret");
 const jwt = require("jsonwebtoken");
 const {bodyChecker} = require("./utilFun");
 const authRouter = express.Router();
-const emailSender = require("../sendEmail");
-const userModel = require("../userModel");
+const emailSender = require("../helper/sendEmail");
+const userModel = require("../model/userModel");
 
 
 authRouter

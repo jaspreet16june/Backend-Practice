@@ -7,6 +7,8 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const userRouter = require("./router/userRouter");
 const authRouter = require("./router/authRouter");
+const planRouter = require("./router/planRouter");
+
 
 
 app.use(express.static("public"));
@@ -15,6 +17,8 @@ app.use(cookieParser());
 
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
+app.use("/plan", planRouter);
+
 
 app.listen("8008",function(){
     console.log("Server 8003 is listening");
