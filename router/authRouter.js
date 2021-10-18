@@ -62,7 +62,7 @@ authRouter
                if(user){
                    //password
                    if(user.password == password){
-                       let token = jwt.sign({id:user["_id"]},JWT_SECRET,{httpOnly :true})
+                       let token = jwt.sign({id:user["_id"]},JWT_SECRET)
                        res.cookie("jwt",token)
 
                        res.status(200).json({

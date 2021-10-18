@@ -19,6 +19,7 @@ module.exports.protectRoute = function protectRoute(req,res,next){
             if(decreptedToken){
             let userId = decreptedToken.id;
             req.userId =  userId
+           console.log(userId)
             next();
         }else{
             res.send("send details in body")

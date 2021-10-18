@@ -2,12 +2,8 @@ const express = require('express');
 const {protectRoute,bodyChecker,isAuthorized } = require("./utilFun")
 const planRouter = express.Router();
 const planModel = require("../model/planModel")
-
- //onlu authorized to admin
- const { createElement,
-    getElement, getElements,
-    updateElement,
-    deleteElement } = require("../helper/factory");
+ //only authorized to admin
+ const { createElement, getElement, getElements, updateElement,deleteElement } = require("../helper/factory");
 
 // const planRouter = express.Router();
 
@@ -29,6 +25,5 @@ planRouter
     .route("/")
     .get(protectRoute, isAuthorized(["admin", "ce"]), getPlans)
     .post(bodyChecker, isAuthorized(["admin"]), createPlan);
-
 
 module.exports = planRouter;
