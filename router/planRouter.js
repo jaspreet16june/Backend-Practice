@@ -23,7 +23,7 @@ planRouter
 
 planRouter
     .route("/")
-    .get(protectRoute, isAuthorized(["admin", "ce"]), getPlans)
-    .post(bodyChecker, isAuthorized(["admin"]), createPlan);
+    .get(bodyChecker,isAuthorized(["admin", "ce"]), getPlans)
+    .post(bodyChecker,isAuthorized(["admin"]), createPlan);
 
 module.exports = planRouter;

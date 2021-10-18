@@ -21,7 +21,7 @@ app.use("/plan", planRouter);
 
 
 app.listen("8008",function(){
-    console.log("Server 8003 is listening");
+    console.log("Server 8008 is listening");
 })
 
 
