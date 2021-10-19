@@ -37,7 +37,11 @@ const planSchema = new mongoose.Schema({
 
     planImage: {
         type: [String]
-    }
+    },
+    reviews:{
+        type:[mongoose.Schema.ObjectId]
+    },
+    avgRating:Number
 
 })
 
