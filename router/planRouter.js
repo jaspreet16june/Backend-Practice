@@ -40,4 +40,25 @@ planRouter.route("/:id")
     .patch(bodyChecker, isAuthorised(["admin", "ce"]), updatePlan)
     .delete(bodyChecker, isAuthorised(["admin"]), deletePlan)
 
+planRouter.route("/sortByRating")
+          .get(getBestPlan)
+
+          async function getBestPlan(req,res){
+              try{
+                  let plans = await planModel.find().sort("avgRating").populate({
+                      path:"reviews",
+                      select:"review"
+                  })
+
+                  res.status(200).json({
+                      plans
+                  })
+              }
+              catch(err){
+                res.status(404).json({
+                    message:err.message
+                })
+              }
+          }
+
 module.exports = planRouter;
