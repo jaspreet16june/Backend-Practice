@@ -2,31 +2,18 @@ const express = require("express");
 const reviewModel = require("../model/reviewModel");
 const { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
 
-const { createElement,
+const { 
     getElement, getElements,
-    updateElement,
-    deleteElement } = require("../helper/factory");
+    updateElement} = require("../helper/factory");
 
     const reviewRouter = express.Router();
     
-    const createReview = createElement(reviewModel);
-let getReviews = getElements(reviewModel);
-let getReview = getElement(reviewModel);
-let updateReview = updateElement(reviewModel);
-let deleteReview = deleteElement(reviewModel);
+    let getReviews = getElements(reviewModel);
+    let getReview = getElement(reviewModel);
+    let updateReview = updateElement(reviewModel);
+
 
 reviewRouter.use(protectRoute);
-
-// planRouter
-//     .route("/:id")
-//     .get(bodyChecker, getPlan)
-//     .patch(bodyChecker, isAuthorised(["admin", "ce"]), updatePlan)
-//     .delete(bodyChecker, isAuthorised(["admin"]), deletePlan)
-
-// planRouter
-//     .route("/")
-//     .get(protectRoute, isAuthorised(["admin", "ce"]), getPlans)
-//     .post(bodyChecker, isAuthorised(["admin"]), createPlan);
 
 reviewRouter
 .route('/')
@@ -38,11 +25,58 @@ reviewRouter
 reviewRouter
     .route("/getUserAlso")
     .get(getUserAlso)
-// planRouter.route("/sortByRating", getbestPlans);
-reviewRouter.route("/:id")
-.get(getReview)
+    // planRouter.route("/sortByRating", getbestPlans);
+    reviewRouter.route("/:id")
+    .get(getReview)
 .patch(bodyChecker, isAuthorised(["admin", "ce"]), updateReview)
 .delete(bodyChecker, isAuthorised(["admin"]), deleteReview)
+
+const createReview = async function (req,res){
+    try{
+
+        let review = await reviewModel.create(req.body);
+        let planId = review.plan
+    let plan = await reviewModel.findById(planId);
+    
+    plan.reviews.push(review["_id"]);
+    
+    if(plan.avgRating){
+        let sum = plan.avgRating * plan.reviews.length;
+        let finalRating = (sum + review.rating) / (plan.review.length+1);
+        
+        plan.avgRating = finalRating
+        
+    }else{
+        plan.avgRating  = review.rating;
+    }
+    }
+    catch(err){
+        res.status(500).json({
+            message:"Server Error"
+        })
+    }
+}
+
+let deleteReview = async function(req,res){
+    try{
+        let review = await reviewModel.findAndDelete(req.body.id);
+        let planId = review.plan;
+        let plan = await reviewModel.findById(planId);
+        let idxOfReview = plan.reviews.indexOf(review["_id"]);
+        plan.review.splice(idxOfReview, 1);
+        await plan.save();
+        res.status(200).json({
+            message: "review deleted",
+            review: review
+        })
+    }  
+    catch(err){
+        res.status(404).json({
+            message:"Server error"
+        })
+    }
+}
+
 async function getUserAlso(req, res) {
 
         try {
@@ -50,20 +84,20 @@ async function getUserAlso(req, res) {
                 path: "user plan",
                 select: "name email duration price name"
             })
-    
+            
             res.status(200).json({
                 review: reviews,
             })
-    
+            
         }
         catch (err) {
             res.status(500)
-                .json({
-                    err: err.message,
-                })
+            .json({
+                err: err.message
+            })
         }
     
-    }
+}
     
 
 module.exports = reviewRouter;
