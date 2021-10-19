@@ -1,17 +1,16 @@
-const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../hide/secret");
-const userModel = require("../model/userModel")
-module.exports.bodyChecker = function bodyChecker(req,res,next){
-    // let body = req.body;
-    
+let jwt = require("jsonwebtoken");
+let { JWT_SECRET } = require("../hide/secret");
+let userModel = require("../model/userModal");
+
+module.exports.bodyChecker = function bodyChecker(req, res, next) {
     let isPresent = Object.keys(req.body);
-    console.log(isPresent.length);
-    if(isPresent.length){
+    if (isPresent.length) {
         next();
-    }else{
-        res.send("send details in body")
+    } else {
+        res.send("send details in body");
     }
 }
+
 module.exports.protectRoute = function protectRoute(req, res, next) {
     try {
 
@@ -32,43 +31,17 @@ module.exports.protectRoute = function protectRoute(req, res, next) {
     }
 }
 
-
-// module.exports.isAuthorized =   function isAuthorized(roles){
-//     return async function (req,res,next){
-//         let {userId} = req
-
-//         try{
-//             let user = await userModel.findById(userId);
-//             let userIsAuthorized = roles.includes(user.role);
-//             if(userIsAuthorized){
-//                 next();
-//             }else{
-//                 res.status(200).json({
-//                     message:"User not authorized"
-//                 })
-//             }
-//         }
-     
-//         catch(err){
-//             res.status(404).json({
-//                 message:"Server Error"
-//             })
-//         }
-
-
-//     }
-// }
-module.exports.isAuthorized = function (roles) {
+module.exports.isAuthorised = function (roles) {
     console.log("I will run when the server is started")
     // function call 
     console.log()
-    return async function (req, res,next) {
+    return async function (req, res, next) {
         console.log("Inner function");
         let { userId } = req;
         // id -> user get ,user role,
         try {
             let user = await userModel.findById(userId);
-            console.log("role", user)
+            // console.log("role", user)
             let userisAuthorized = roles.includes(user.role);
             if (userisAuthorized) {
                 req.user = user;

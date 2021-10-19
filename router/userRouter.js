@@ -1,28 +1,30 @@
-const express = require('express');
-const {protectRoute,bodyChecker,isAuthorized} = require("./utilFun")
-const userRouter = express.Router();
-const userModel = require("../model/userModel")
-// const factory = require("../helper/factory")
-const { getElement,createElement,getElements,updateElement,deleteElement} = require("../helper/factory")
+let express = require("express");
+const userModel = require("../model/userModal");
+let { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
+let userRouter = express.Router();
+const { createElement,
+    getElement, getElements,
+    updateElement,
+    deleteElement } = require("../helper/factory");
 
-const getUser = getElement(userModel)
-const createUser = createElement(userModel)
-const getUsers = getElements(userModel)
-const updateUser = updateElement(userModel)
-const deleteUser = deleteElement(userModel);
+
+userRouter.use(protectRoute);
+
+let createUser = createElement(userModel);
+let getUser = getElement(userModel);
+let getUsers = getElements(userModel);
+let updateUser = updateElement(userModel);
+let deleteUser = deleteElement(userModel);
 
 userRouter
-         .route("/")
-         .get(getUsers,isAuthorized(["admin"]))
-         .post(bodyChecker,isAuthorized(["admin","CE"]),createUser)
-        
-        
-userRouter 
-         .route("/:id")
-         .get(bodyChecker,getUser)
-         .patch(bodyChecker,isAuthorized(["admin","CE"]),updateUser)
-         .delete(bodyChecker,isAuthorized(["admin"]),deleteUser)
+    .route("/:id")
+    .get(bodyChecker, getUser)
+    .patch(bodyChecker, isAuthorised(["admin", "ce"]), updateUser)
+    .delete(bodyChecker, isAuthorised(["admin"]), deleteUser)
 
- //onlu authorized to admin
+userRouter
+    .route("/")
+    .get(protectRoute, isAuthorised(["admin", "ce"]), getUsers)
+    .post(bodyChecker, isAuthorised(["admin"]), createUser);
 
 module.exports = userRouter;

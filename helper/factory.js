@@ -1,27 +1,8 @@
-// function createElement(ElementModel){
-//     return async function(req,res){
-        
-//         try{
-//             let user = await ElementModel.create(req.body)
-//             res.status(202).json({
-//                 createdUser :user
-//             })
-            
-//         }
-//         catch(err){
-//             res.status(500).json({
-//                 message:"server error"
-//             })
-//         }
-//     }
-// }
-function createElement(ElementModel) {
+function createElement(elementModel) {
     return async function (req, res) {
         try {
-            let element = await ElementModel.create(req.body);
-            console.log(element)
+            let element = await elementModel.create(req.body);
             res.status(200).json({
-                
                 element: element
             });
         } catch (err) {
@@ -33,88 +14,89 @@ function createElement(ElementModel) {
     }
 }
 
-function getElement(ElementModel){
-   return async function(req, res) {
+function getElements(elementModel) {
+    return async function (req, res) {
         try {
-            let { id } = req.params;
-            let user = await ElementModel.findById(id);
+            let element = await elementModel.find();
             res.status(200).json({
-                message: user,
+                element: element,
             })
-    
+
         } catch (err) {
             res.status(404).json({
                 message: err.message,
             })
         }
     }
-
 }
-function getElements(ElementModel){
-      
-    return async function (req,res){
-        try{
-          let user = await ElementModel.find();
-          res.status(202).json({
-            message: user
-        })
-     }
-     catch(err){
-        res.status(500).json({
-            message:"server error"
-        })
-     }
-    }
-}
-function deleteElement(ElementModel){
 
-    return async function(req,res){
-        try{
-            let { id } = req.body
-            let user = await ElementModel.findByIdAndDelete(id);
-            res.status(202).json({
-                message:"User Is Deleted"
-        })
-    }
-    catch{
-        res.status(500).json({
-            message:"server error"
-            })
-        }
-    }
-}
-function updateElement(ElementModel){
-
-    return async function(req,res){
-        try{
-        let {id} = req.params
-        let user = await ElementModel.findById(id);
-        if(req.body.password || req.body.confirmPassword){
+function getElement(elementModel) {
+    return async function (req, res) {
+        try {
+            let { id } = req.params;
+            let element = await elementModel.findById(id);
             res.status(200).json({
-                message:"Use forget password instead"
+                element: element,
+            })
+
+        } catch (err) {
+            res.status(404).json({
+                message: err.message,
             })
         }
-        
-
-        for(let key in req.body){
-            user[key] = req.body[key]
-                }
-                await user.save({
-                    validateBeforeSave: false
-                });
-                res.status(202).json({
-                    message:"User Is Updated"
-                })
-                
-            }
-    catch(err){
-        res.status(500).json({
-            message:"server error"
-        })
     }
- }
 }
 
+function updateElement(elementModel) {
+    return async function (req, res) {
+
+        try {
+            let { id } = req.params;
+
+            if (req.body.password || req.body.confirmPassword) {
+                res.json({
+                    message: "use forget password instead",
+                })
+            }
+
+            let element = await elementModel.findById(id);
+
+            for (let key in req.body) {
+                element[key] = req.body[key];
+            }
+
+            await element.save({
+                validateBeforeSave: false,
+            });
+
+            res.status(200).json({
+                element: element,
+            })
+
+        } catch (err) {
+            res.status(404).json({
+                message: err.message,
+            })
+        }
+    }
+}
+
+function deleteElement(elementModel) {
+    return async function (req, res) {
+        try {
+            let { id } = req.params;
+            let element = await elementModel.findByIdAndDelete(id);
+            res.status(200).json({
+                element: element,
+            })
+
+        } catch (err) {
+            res.status(404).json({
+                message: err.message,
+            })
+        }
+    }
+}
 
 module.exports.createElement = createElement;
 module.exports.deleteElement = deleteElement;

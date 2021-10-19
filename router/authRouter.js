@@ -1,156 +1,139 @@
-const express = require('express');
+let express = require("express");
+let authRouter = express.Router();
+let { bodyChecker, protectRoute } = require("./utilFunc");
+let jwt = require("jsonwebtoken");
+let emailSender = require("../helper/emailSender");
+
+const userModel = require("../model/userModal");
 const { JWT_SECRET } = require("../hide/secret");
-const jwt = require("jsonwebtoken");
-const {bodyChecker} = require("./utilFun");
-const authRouter = express.Router();
-const emailSender = require("../helper/sendEmail");
-const userModel = require("../model/userModel");
 
+authRouter.use(bodyChecker);;
 
 authRouter
-         .route("/signup")
-        //  .get(getUsers)
-         .post(bodyChecker,signUpUser)
+    .route("/signup")
+    .post(signupUser);
 
 authRouter
-         .route("/login")
-         .post(bodyChecker,loginUser)
+    .route("/login")
+    .post(loginUser);
 
 authRouter
-         .route("/forgetPassword")
-         .post(forgetPassword);
+    .route("/forgetPassword")
+    .post(forgetPassword);
 
 authRouter
-         .route("/resetPassword")
-         .post(resetPassword);
-    
+    .route("/resetPassword")
+    .post(resetPassword);
 
-         async function signUpUser(req,res){
-            try{
-                // let {name,email,password,confirmPassword} = req.body
-                // if(password == confirmPassword){
-                //     let newUser = {name,email,password,confirmPassword};
-                //     content.push(newUser);
-        
-                //     fs.writeFileSync("data.json",JSON.stringify(content));
-                //     res.status(200).json({
-                //         createUser:newUser
-                //     })
-        
-                // }else{
-                //     res.status(422).send("Data is not Sufficent");
-                // }
-        
-                let newUser = await userModel.create(req.body);
+async function signupUser(req, res) {
+    try {
+        let newUser = await userModel.create(req.body);
+        res.status(200).json({
+            "message": "user created successfully",
+            user: newUser,
+        })
+    } catch (err) {
+        res.status(500).json({
+            message: err.message,
+        })
+    }
+}
+
+async function loginUser(req, res) {
+    try {
+        let { email, password } = req.body;
+        let user = await userModel.findOne({ email });
+        if (user) {
+            if (user.password == password) {
+                let token = jwt.sign({ id: user["_id"] }, JWT_SECRET);
+                res.cookie("JWT", token);
                 res.status(200).json({
-                    message:"User created successfully",
-                    user:newUser,
+                    message: "user logged in",
+                    user: user,
                 })
-            }
-            catch(err){
-                res.status(500).json({
-                    message:err.message,
-                })
-            }
-        }
-        async function loginUser(req,res){
-            try{
-                let {email,password} = req.body ;
 
-               let user =await userModel.findOne({email});
-
-               if(user){
-                   //password
-                   if(user.password == password){
-                       let token = jwt.sign({id:user["_id"]},JWT_SECRET)
-                       res.cookie("jwt",token)
-
-                       res.status(200).json({
-                           message:"User Logged In",
-                       })
-                    }
-                    else{
-                        res.status(404).json({
-                            message:"User with this email is not found Kindly Signup"
-                        })
-                    }
-               }else{
-                   res.status(404).json({
-                       message:"User Not Found"
-                   })
-               }
-            }
-                catch(err){
-                    res.status(400).json({
-                        message:err.message,
-                    })
-                }
-            }
-
-        async function forgetPassword(req,res){
-            try{
-
-                let {email} = req.body;
-
-                let user = await userModel.findOne({email});
-
-                if(user){
-                    let token = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
-                    await userModel.updateOne({email},{token});
-                    let newUser = await userModel.findOne({email});
-
-                    await emailSender(token, user.email);
-
-                    res.status(200).json({
-                        message:"user token send to your email",
-                        user:newUser,
-                        token
-                    })
-                }else{
-                        res.status(404).json({
-                            message:"Kindly write correct email"
-                        })
-                }
-            }
-            catch(err){
+            } else {
                 res.status(404).json({
-                    message:err.message
+                    message: "email or password is not correct",
                 })
             }
+        } else {
+            res.status(404).json({
+                message: "user not found",
+            })
         }
-        async function resetPassword(req,res){
-            try{
+    } catch (err) {
+        console.log(error)
+        res.status(404)
+            .json({
+                message: err.message,
+            })
+    }
+}
 
-                let {token, password,confirmPasssword} = req.body;
-                let user = await userModel.findOne({ token })
+async function forgetPassword(req, res) {
+    try {
+        let { email } = req.body;
+        let user = await userModel.findOne({ email });
+        if (user) {
+            let token = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
 
-                if(user){
+            await userModel.updateOne({ email }, { token });
+            let newUser = await userModel.findOne({ email });
 
-                    user.password = password
-                    user.confirmPasssword = confirmPasssword
-                    user.token = undefined
+            await emailSender(token, user.email);
 
-                    //database m save krna we will use save()
-                    
-                    await user.save()
-                    
-                    let newUser = await userModel.findOne({email:user.email})
-                     
-                    res.status(200).json({
-                        message:"user token sent to your mail",
-                        user: newUser
-                    })
-                }else{
-                    res.status(404).json({
-                        message:"token is incorrect"
-                    })
-                }
-                    
-            }
-            catch(err){
-                    res.status(500).json({
-                        message:err.message
-                    })
-            }
+            res.status(200).json({
+                message: "user token send to your email",
+                user: newUser,
+                token
+            })
         }
+        else {
+            res.status(404).json({
+                message: "user not found",
+            })
+        }
+    } catch (err) {
+        res.status(500)
+            .json({
+                message: err.message,
+            })
+    }
+}
+
+async function resetPassword(req, res) {
+    try {
+        let { password, confirmPassword, token } = req.body;
+        let user = await userModel.findOne({ token });
+
+        if (user) {
+            user.confirmPassword = confirmPassword;
+            user.password = password;
+            user.token = undefined;
+
+            await user.save();
+
+            let newUser = await userModel.findOne({ email: user.email });
+
+            res.status(200).json({
+                message: "password has been changed",
+                user: newUser,
+                token
+            })
+        } else {
+            res.status(404).json({
+                message: "token is incorrect",
+            })
+        }
+    }
+    catch (err) {
+        res.status(500)
+            .json({
+                message: err.message,
+            })
+    }
+
+}
+
 module.exports = authRouter;
