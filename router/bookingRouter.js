@@ -32,7 +32,12 @@ bookingRouter
 .patch(bodyChecker, isAuthorised(["admin", "ce"]), updateBooking)
 .delete(bodyChecker, isAuthorised(["admin"]), deleteBooking)
 
-
+const deleteBooking = async function(){
+ return 
+}
+const createBooking  = async function(){
+return
+}
 
 async function getUserAlso(req, res) {
 
