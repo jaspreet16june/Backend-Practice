@@ -7,9 +7,6 @@ var razorpay = new Razorpay({
     key_id: KEY_ID,
     key_secret: KEY_SECRET,
 });
-
-
-
 const { 
     getElement, getElements,
     updateElement} = require("../helper/factory");
