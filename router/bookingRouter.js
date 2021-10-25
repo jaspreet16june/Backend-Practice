@@ -1,6 +1,14 @@
 const express = require("express");
 const bookingModel = require("../model/bookingModel");
+const Razorpay = require("razorpay");
 const { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
+let { KEY_ID, KEY_SECRET } = require("../hide/secret");
+var razorpay = new Razorpay({
+    key_id: KEY_ID,
+    key_secret: KEY_SECRET,
+});
+
+
 
 const { 
     getElement, getElements,
@@ -16,30 +24,85 @@ const userModel = require("../model/userModal");
     
     bookingRouter.use(protectRoute);
     
-    async function createBooking(req,res){
-      try{
+    // const initiateBooking = async function (req,res){
+    //   try{
     
-          let booking = await bookingModel.create(req.body);
-          let bookingId = booking["_id"];
-          let userId = booking.user;
-          let user = await userModel.findById(userId);
-          user.bookings.push(bookingId);
+    //       let booking = await bookingModel.create(req.body);
+    //       let bookingId = booking["_id"];
+    //       let userId = booking.user;
+    //       let user = await userModel.findById(userId);
+    //       user.bookings.push(bookingId);
+
     
-          await user.save();
+    //       await user.save();
     
-          res.status(200).json({
-              message:"booking created",
-              booking: booking
-          })
+    //       const payment_capture = 1;
+    //     const amount = 500;
+    //     const currency = "INR";
+    //     const options = {
+    //         amount,
+    //         currency,
+    //         receipt: `rs_${bookingId}`,
+    //         payment_capture,
+    //     };
+    //     const response = await razorpay.orders.create(options);
+    //     console.log(response);
+    //     res.status(200).json({
+    //         id: response.id,
+    //         currency: response.currency,
+    //         amount: response.amount,
+    //         booking: booking,
+    //         message: "booking created",
+    //     });
+
+
+    //       res.status(200).json({
+    //           message:"booking created",
+    //           booking: booking
+    //       })
     
-    }catch(err){
-         res.status(404).json({
-             message:err.message
-         })
-       }
+    // }catch(err){
+    //      res.status(404).json({
+    //          message:err.message
+    //      })
+    //    }
         
+    // }
+    
+    const initiateBooking = async function (req, res) {
+        try {
+            let booking = await bookingModel.create(req.body);
+            let bookingId = booking["_id"];
+            let userId = req.body.user;
+            let user = await userModel.findById(userId);
+            user.bookings.push(bookingId);
+            await user.save();
+            const payment_capture = 1;
+            const amount = 500;
+            const currency = "INR";
+            const options = {
+                amount,
+                currency,
+                receipt: `rs_${bookingId}`,
+                payment_capture,
+            };
+            const response = await razorpay.orders.create(options);
+            console.log(response);
+            res.status(200).json({
+                id: response.id,
+                currency: response.currency,
+                amount: response.amount,
+                booking: booking,
+                message: "booking created",
+            });
+        }
+        catch (err) {
+            res.status(500).json({
+                message: err.message
+            })
+        }
     }
-    const deleteBooking = async function(){
+    const deleteBooking = async function(req,res){
       try{
     
       
@@ -87,7 +150,7 @@ const userModel = require("../model/userModal");
    
     bookingRouter
     .route('/')
-    .post(bodyChecker, isAuthorised(["admin"]), createBooking)
+    .post(bodyChecker, isAuthorised(["admin"]), initiateBooking)
 // localhost/plan -> get
 .get(protectRoute, isAuthorised(["admin", "ce"]), getBookings);
 // console.log(2)

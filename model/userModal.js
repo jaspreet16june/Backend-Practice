@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
     },
     bookings:{
         type:[mongoose.Schema.ObjectId],
-        required:true
+        ref:"bookingModel"
     }
 
 })
