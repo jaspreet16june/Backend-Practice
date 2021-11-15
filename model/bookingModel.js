@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const {db_link} = require("../hide/secret");
+const {db_link} = process.env || require("../hide/secret");
 
 mongoose.connect(db_link).then(function(db){
     console.log("Db Booking is connected");

@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const cookieParser = require("cookie-parser");
-
+const PORT =  process.env.PORT || 8006;
 const userRouter = require("./router/userRouter");
 const authRouter = require("./router/authRouter");
 const planRouter = require("./router/planRouter");
@@ -22,7 +22,7 @@ app.use("/api/review", reviewRouter);
 app.use("/api/booking", bookingRouter);
 
 
-app.listen("8006", function () {
+app.listen(PORT, function () {
     console.log('server started at port 8006');
 })
 

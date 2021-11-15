@@ -2,9 +2,9 @@ const express = require("express");
 const bookingModel = require("../model/bookingModel");
 const Razorpay = require("razorpay");
 const { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
-let { KEY_ID, KEY_SECRET } = require("../hide/secret");
+let { key_id, KEY_SECRET } = process.env || require("../hide/secret") ;
 var razorpay = new Razorpay({
-    key_id: KEY_ID,
+    key_id: key_id,
     key_secret: KEY_SECRET,
 });
 const { 
